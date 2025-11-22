@@ -6,8 +6,8 @@
 const int kMaxSize{50};
 void Get_Info(std::string &asset, double &cost, double &salvage, std::string &answer, double &life);
 void Units_of_Production(int &, int units[], double);
-void print_outline(double life);
-void print_straightline( double , double);
+void print_outline();
+void print_straightline( double , double, double);
 void Declining_Balance(double expense[], double accumulated[], double cost, double salvage, double life);
 void Print_Declining(double expense[], double accumulated[], double cost, double life);
 
@@ -29,7 +29,7 @@ int main(){
     
      std::print("Would you like to estimate using the units of production method as well?: "); // ask if user would like to estimate units of production depreciation method as well
         std::cin >> answer;
-    
+        std::println();
         if (answer == "yes" || answer == "Yes"){
             Units_of_Production(total_units, units, life);
         }
@@ -37,9 +37,9 @@ int main(){
    
     double straight_line = static_cast<double>(cost - salvage) * (1 / life); // calculate straight line depreciation and
     // output a timeline for over the years
-    print_outline(life);
-    print_straightline(straight_line, life);
-    std::println("\n\n Depreciable Cost: {}\n", cost - salvage);
+    print_outline();
+    print_straightline(straight_line, life, cost);
+    std::println("\n\n Depreciable Cost: ${}\n", cost - salvage);
 
     int size = std::ceil(life);
 
@@ -66,17 +66,10 @@ void Units_of_Production(int &total_units, int units[], double life){
     return;
 }
 
-void print_outline(double life){
-    for (int i{1}; i <= life; ++i){
-        std::print("    Year {:3}    \t", i);
-    }
-    std::println();
-
-    for (int i{1}; i <= life; ++i){
-        std::print("--------------- \t");
-    }
-    std::println();
-
+void print_outline(){
+    
+    std::println("  Year  |  Depreciation Expense |  Accumulated Depreciation |  Book Value");
+    std::println("-------------------------------------------------------------------------");
     return;
 }
 
@@ -115,9 +108,10 @@ void Get_Info(std::string &asset, double &cost, double &salvage, std::string &an
     return;
 }
 
-void print_straightline(double straight_line, double life){
+void print_straightline(double straight_line, double life, double cost){
     for (int i{1}; i <= life; ++i){
-        std::print("${:^21.2f}", straight_line);
+        std::println("  {:^4}  |  ${:>18}  |  ${:>22}  |  ${:>9}", i, straight_line, straight_line * i, cost - (straight_line * i));
+        std::println("-------------------------------------------------------------------------");
     }
     return;
 }
