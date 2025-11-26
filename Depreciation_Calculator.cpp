@@ -161,7 +161,7 @@ void Declining_Balance(double expense[], double accumulated[], double cost, doub
         accumulated[i] = accumulation; // store in array
     }
 
-    expense[life - 1] = (cost - accumulation);
+    expense[life - 1] = (cost - accumulation) - salvage;
     accumulated[life - 1] = (cost - salvage);
 
     return;
