@@ -6,11 +6,13 @@
 const int kMaxSize{50};
 int Print_Menu();
 void Get_Info(std::string &asset, double &cost, double &salvage, int &life);
-void Units_of_Production(int &total_units, int units[], int life);
+void Units_of_Production(int &total_units, int units[], int &units_life);
 void print_outline(std::string asset, double cost, double salvage);
 void print_straightline(double straight_line, int life, double cost);
 void Declining_Balance(double expense[], double accumulated[], double cost, double salvage, int life);
 void Print_Declining(double expense[], double accumulated[], double cost, int life);
+void print_header();
+void Print_Production( double cost, int units_life, int units[], int total_units, double salvage);
 
 int main(){
 
@@ -18,13 +20,15 @@ int main(){
     std::println("You can calculate the depreciation of your plant assets over time\n");
     // prompt the user for cost, estimated salvage value, and estimated useful life
     
-    Menu:
-    int choice = Print_Menu();
-    
     std::string asset;
     double cost{};
     double salvage{};
     int life{};
+    int units_life{};
+
+    Menu:
+    int choice = Print_Menu();
+    
 
     if (choice == 4){
         std::println("Thank you for using the Depreciation Calculator, Bye!!!");
@@ -43,9 +47,9 @@ int main(){
     int total_units; // store in variables
     int units[kMaxSize];
     if (choice == 2){
-    print_outline(asset, cost, salvage);
-    Units_of_Production(total_units, units, life);
-    // Print_Production();
+        Units_of_Production(total_units, units, units_life);
+        print_outline(asset, cost, salvage);
+        Print_Production(cost, units_life , units, total_units, salvage);
     }
     
     
@@ -65,14 +69,17 @@ int main(){
     goto Menu;
 }
 
-void Units_of_Production(int &total_units, int units[], int life){
+void Units_of_Production(int &total_units, int units[], int &units_life){
    
     std::print("How many units can this asset produce over its lifetime?: "); // prompt for units of production throughout the years
     std::cin >> total_units;
-    for(int i{1}; i <= life; ++i){
-        std::print("How many units produced during year {}?: ", i);
+    std::print("How many years has this asset been in use?: ");
+    std::cin >> units_life;
+    for(int i{}; i < units_life; ++i){
+        std::print("How many units produced during year {}?: ", i + 1);
         std::cin >> units[i];
     }
+    std::println();
     return;
 }
 
@@ -84,15 +91,14 @@ void print_outline(std::string asset, double cost, double salvage){
     ++count;
 
     std::println("Asset: {}", asset);
-    std::println("Original Cost: ${}", cost);
+    std::println("Original Cost: ${:.2f}", cost);
     std::println("Depreciable Cost: ${:.2f}\n", cost - salvage);
-    std::println("  Year  |  Depreciation Expense |  Accumulated Depreciation |  Book Value");
-    std::println("-------------------------------------------------------------------------");
+    
     return;
 }
 
 void Get_Info(std::string &asset, double &cost, double &salvage, int &life){
-        static int count{};
+    static int count{};
     if (count == 1){
         return;
     }
@@ -138,39 +144,35 @@ void Get_Info(std::string &asset, double &cost, double &salvage, int &life){
 }
 
 void print_straightline(double straight_line, int life, double cost){
+    print_header();
     for (int i{1}; i <= life; ++i){
-        std::println("  {:^4}  |  ${:>18.2f}  |  ${:>22.2f}  |  ${:>9.2f}", i, straight_line, straight_line * i, cost - (straight_line * i));
+        std::println("  {:^4}  |  {:>19}  |  {:>23}  |  {:>9}", i, std::format("${:.2f}", straight_line), std::format("${:.2f}", straight_line * i), std::format("${:.2f}", cost - (straight_line * i)));
         std::println("-------------------------------------------------------------------------");
     }
     return;
 }
 
 void Declining_Balance(double expense[], double accumulated[], double cost, double salvage, int life){
-    double rate = ( 1 / static_cast<double>(life)) * 2;
+    double rate = ( 2 / static_cast<double>(life));
     double accumulation{};
-    
-    for (int i{}; i < life; ++i){// for each year
+    for (int i{}; i < life - 1; ++i){// for each year
         expense[i] = (cost - accumulation) * rate; // calculate expense for that year and store in array
-        accumulation += expense[i]; // add to accumulation and store in array
-        if ( (cost - accumulation) < salvage ){
-            accumulated[i] = cost - salvage;
-            expense[i] = accumulation - salvage;
-        } else {
-            accumulated[i] = accumulation;
-        }
+        accumulation += expense[i]; // add to accumulation 
+        accumulated[i] = accumulation; // store in array
     }
+
+    expense[life - 1] = (cost - accumulation);
+    accumulated[life - 1] = (cost - salvage);
 
     return;
 }
 
 void Print_Declining(double expense[], double accumulated[], double cost, int life){
-    for (int i{1}; i < life; ++i){
-        std::println("  {:^4}  |  ${:>18.2f}  |  ${:>22.2f}  |  ${:>9.2f}", i, expense[i], accumulated[i] , cost - accumulated[i]);
+    print_header();
+    for (int i{}; i < life; ++i){
+        std::println("  {:^4}  |  {:>19}  |  {:>23}  |  {:>9}", i + 1, std::format("${:.2f}", expense[i]), std::format("${:.2f}", accumulated[i]) , std::format("${:.2f}", cost - accumulated[i]));
         std::println("-------------------------------------------------------------------------");
     }
-    std::println("  {:^4}  |  ${:>18.2f}  |  ${:>22.2f}  |  ${:>9.2f}", life, expense[life], accumulated[life] , cost - accumulated[life]);
-    std::println("-------------------------------------------------------------------------");
-
 
     return;
 }
@@ -187,4 +189,25 @@ int Print_Menu(){
     std::println();
 
     return choice;
+}
+
+void print_header(){
+    std::println("  Year  |  Depreciation Expense |  Accumulated Depreciation |  Book Value");
+    std::println("-------------------------------------------------------------------------");
+    return;
+}
+
+void Print_Production( double cost, int units_life, int units[], int total_units, double salvage){
+    double accum{};
+    double per_unit = (cost - salvage) / total_units;
+    std::println("\nDepreciation per unit: ${:.2f}\n", per_unit);
+    print_header();
+    for(int i{}; i < units_life ; ++i){
+        accum += (per_unit * units[i]);
+        double expense = per_unit * units[i];
+        std::println("  {:^4}  |  {:>19}  |  {:>23}  |  {:>9}", i + 1, std::format("${:.2f}", expense), std::format("${:.2f}", accum), std::format("${:.2f}", cost - accum));
+        std::println("-------------------------------------------------------------------------");
+    }
+
+    return;
 }
