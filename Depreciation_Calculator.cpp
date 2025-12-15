@@ -113,7 +113,7 @@ void Get_Info(std::string &asset, double &cost, double &salvage, int &life){
     std::print("What is the total cost of the asset?: $");
     std::cin >> cost;
     
-    std::println("What is the estimated salvage value?:");
+    std::println("What is the estimated salvage value?");
     
     std::print("(For a defintion of salvage value, type yes): $");
     std::cin >> answer;
