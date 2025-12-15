@@ -42,5 +42,5 @@ Year 4: 27500
 
 ## How to Run
 Requires a C++23 compatible compiler  
-Compile and run using any C++ compiler: g++ -std=c++23 Depreciation_Calculator.cpp -o Depreciation_Calculator  
-./Depreciation_Calculator
+Compile and run using any C++ compiler: g++ -std=c++23 Depreciation_Calculator.cpp -o Depreciation  
+./Depreciation
