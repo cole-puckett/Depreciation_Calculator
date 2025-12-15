@@ -71,7 +71,8 @@ int main(){
 
 void Units_of_Production(int &total_units, int units[], int &units_life){
    
-    std::print("How many units can this asset produce over its lifetime?: "); // prompt for units of production throughout the years
+    std::println("How many units can this asset produce over its lifetime?"); // prompt for units of production throughout the years
+    std::print("(Could also be how many hours can this asset operate): ");
     std::cin >> total_units;
     std::print("How many years has this asset been in use?: ");
     std::cin >> units_life;
@@ -127,7 +128,7 @@ void Get_Info(std::string &asset, double &cost, double &salvage, int &life){
     answer.clear();
     
     
-    std::println("What is the estimated useful life? (in years):");
+    std::println("What is the estimated useful life?");
     std::print("(For a definition of useful life, type yes): ");
     std::cin >> answer;
     
